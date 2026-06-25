@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { categories } from '../mock';
@@ -166,9 +167,11 @@ export const Products = () => {
               <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
                 We offer custom manufacturing services for your specific requirements. Contact us to discuss your needs and get a personalized quote.
               </p>
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                Request Custom Quote
-              </Button>
+              <Link to="/contact">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Request Custom Quote
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>

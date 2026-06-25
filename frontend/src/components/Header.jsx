@@ -43,11 +43,13 @@ export const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white font-bold text-xl px-4 py-2 rounded-lg shadow-md group-hover:shadow-lg transition-all">
+          <Link to="/" className="flex items-center group">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white font-bold text-xl px-4 py-2 rounded-l-lg shadow-md group-hover:shadow-lg transition-all">
               KK-TRUST
             </div>
-            <span className="text-gray-700 font-semibold text-sm hidden sm:inline">COMP</span>
+            <div className="bg-gray-100 text-blue-700 font-bold text-xl px-3 py-2 rounded-r-lg border border-l-0 border-gray-200 shadow-md group-hover:shadow-lg transition-all">
+              COMP
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
