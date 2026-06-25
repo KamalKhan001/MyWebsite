@@ -10,11 +10,11 @@ export const Header = () => {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About Us' },
-    { path: '/products', label: 'Products' },
-    { path: '/contact', label: 'Contact' }
-  ];
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'About Us' },
+  { path: '/products', label: 'Products' },
+  { path: '/contact', label: 'Contact' }];
+
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -25,11 +25,11 @@ export const Header = () => {
             <div className="flex items-center gap-4">
               <a href="mailto:info@kktrustcomp.com" className="flex items-center gap-2 hover:text-blue-200 transition-colors">
                 <Mail size={14} />
-                <span className="hidden sm:inline">info@kktrustcomp.com</span>
+                <span className="hidden sm:inline">kmk36680@gamil.com</span>
               </a>
               <a href="tel:+923001234567" className="flex items-center gap-2 hover:text-blue-200 transition-colors">
                 <Phone size={14} />
-                <span className="hidden sm:inline">+92 300 1234567</span>
+                <span className="hidden sm:inline">+92 3165694709</span>
               </a>
             </div>
             <div className="text-xs sm:text-sm">
@@ -54,19 +54,19 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                  isActive(link.path)
-                    ? 'text-blue-600 border-b-2 border-blue-600 pb-1'
-                    : 'text-gray-700'
-                }`}
-              >
+            {navLinks.map((link) =>
+            <Link
+              key={link.path}
+              to={link.path}
+              className={`text-sm font-medium transition-colors hover:text-blue-600 ${
+              isActive(link.path) ?
+              'text-blue-600 border-b-2 border-blue-600 pb-1' :
+              'text-gray-700'}`
+              }>
+              
                 {link.label}
               </Link>
-            ))}
+            )}
           </nav>
 
           {/* CTA Button */}
@@ -81,28 +81,28 @@ export const Header = () => {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden text-gray-700 hover:text-blue-600 transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+            onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-gray-200">
+        {isMenuOpen &&
+        <nav className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 py-2 ${
-                    isActive(link.path) ? 'text-blue-600' : 'text-gray-700'
-                  }`}
-                >
+              {navLinks.map((link) =>
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-sm font-medium transition-colors hover:text-blue-600 py-2 ${
+              isActive(link.path) ? 'text-blue-600' : 'text-gray-700'}`
+              }>
+              
                   {link.label}
                 </Link>
-              ))}
+            )}
               <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors">
                   Get Quote
@@ -110,8 +110,8 @@ export const Header = () => {
               </Link>
             </div>
           </nav>
-        )}
+        }
       </div>
-    </header>
-  );
+    </header>);
+
 };
