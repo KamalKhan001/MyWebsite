@@ -209,7 +209,7 @@ export const companyInfo = {
   { label: "Happy Clients", value: "500+" }],
 
   contact: {
-    email: "info@kktrustcomp.com",
+    email: "kmk36680@gmail.com",
     phone: "+92 165694709",
     address: "Sialkot, Punjab, Pakistan",
     whatsapp: "+92 300 1234567"
