@@ -118,6 +118,15 @@ async def get_products(category: Optional[str] = Query(None)):
     return [deserialize_datetime(p) for p in products]
 
 
+@api_router.get("/products/{product_id}", response_model=Product)
+async def get_product(product_id: str):
+    """Get a single product by ID."""
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return deserialize_datetime(product)
+
+
 # Testimonials Endpoints
 @api_router.get("/testimonials", response_model=List[Testimonial])
 async def get_testimonials():

@@ -15,6 +15,10 @@ export const productsAPI = {
     const params = category && category !== 'All' ? { category } : {};
     const response = await apiClient.get('/products', { params });
     return response.data;
+  },
+  getById: async (id) => {
+    const response = await apiClient.get(`/products/${id}`);
+    return response.data;
   }
 };
 

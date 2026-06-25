@@ -1,17 +1,21 @@
 import { Award, Target, Eye, Heart, MapPin, Users, Package, Globe } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { companyInfo } from '../mock';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const About = () => {
+  const { t } = useLanguage();
+  const statLabels = ['stats.experience', 'stats.countries', 'stats.products', 'stats.clients'];
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">About KK-TRUST COMP</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('about.title')}</h1>
             <p className="text-xl text-blue-100">
-              Building trust through quality textile exports since 2014
+              {t('about.subtitle')}
             </p>
           </div>
         </div>
@@ -40,7 +44,7 @@ export const About = () => {
                 <div className="bg-blue-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
                   <Target className="text-blue-600" size={28} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Mission</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">{t('about.mission')}</h3>
                 <p className="text-gray-600 leading-relaxed">
                   {companyInfo.mission}
                 </p>
@@ -52,7 +56,7 @@ export const About = () => {
                 <div className="bg-blue-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
                   <Eye className="text-blue-600" size={28} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Vision</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">{t('about.vision')}</h3>
                 <p className="text-gray-600 leading-relaxed">
                   {companyInfo.vision}
                 </p>
@@ -66,9 +70,9 @@ export const About = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Core Values</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('about.values')}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              The principles that guide everything we do
+              {t('about.valuesDesc')}
             </p>
           </div>
 
@@ -91,9 +95,9 @@ export const About = () => {
       <section className="py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Achievements</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('about.achievements')}</h2>
             <p className="text-blue-100 max-w-2xl mx-auto">
-              Numbers that reflect our commitment to excellence
+              {t('about.achievementsDesc')}
             </p>
           </div>
 
@@ -101,7 +105,7 @@ export const About = () => {
             {companyInfo.stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-5xl font-bold mb-2">{stat.value}</div>
-                <div className="text-blue-100">{stat.label}</div>
+                <div className="text-blue-100">{t(statLabels[index])}</div>
               </div>
             ))}
           </div>
@@ -113,10 +117,10 @@ export const About = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Partner With Us?
+              {t('about.whyPartner')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              What sets us apart in the global textile export market
+              {t('about.whyPartnerDesc')}
             </p>
           </div>
 
@@ -177,10 +181,10 @@ export const About = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Certifications & Standards
+              {t('about.certs')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Committed to international quality and ethical standards
+              {t('about.certsDesc')}
             </p>
           </div>
 

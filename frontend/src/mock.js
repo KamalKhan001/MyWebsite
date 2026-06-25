@@ -210,8 +210,8 @@ export const companyInfo = {
 
   contact: {
     email: "kmk36680@gmail.com",
-    phone: "+92 165694709",
+    phone: "+92 3165694709",
     address: "Sialkot, Punjab, Pakistan",
-    whatsapp: "+92 300 1234567"
+    whatsapp: "+923165694709"
   }
 };
