@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +9,18 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
+
+from auth import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_admin as _get_current_admin,
+)
+
+
+async def require_admin(request: Request):
+    """FastAPI dependency that resolves the current admin from the request."""
+    return await _get_current_admin(request, db)
 
 
 ROOT_DIR = Path(__file__).parent
@@ -148,12 +160,83 @@ async def create_contact_inquiry(inquiry: ContactInquiryCreate):
 
 
 @api_router.get("/contact-inquiries", response_model=List[ContactInquiry])
-async def get_contact_inquiries():
-    """Get all contact inquiries (admin endpoint)."""
+async def get_contact_inquiries(admin: dict = Depends(require_admin)):
+    """Get all contact inquiries (admin only)."""
     inquiries = await db.contact_inquiries.find(
         {}, {"_id": 0}
     ).sort("created_at", -1).to_list(1000)
     return [deserialize_datetime(i) for i in inquiries]
+
+
+@api_router.patch("/contact-inquiries/{inquiry_id}", response_model=ContactInquiry)
+async def update_inquiry_status(
+    inquiry_id: str,
+    payload: dict,
+    admin: dict = Depends(require_admin),
+):
+    """Update inquiry status (admin only). Accepts {status: 'new'|'in_progress'|'closed'}."""
+    new_status = payload.get("status")
+    if new_status not in ("new", "in_progress", "closed"):
+        raise HTTPException(status_code=400, detail="Invalid status")
+    result = await db.contact_inquiries.update_one(
+        {"id": inquiry_id}, {"$set": {"status": new_status}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+    doc = await db.contact_inquiries.find_one({"id": inquiry_id}, {"_id": 0})
+    return deserialize_datetime(doc)
+
+
+@api_router.delete("/contact-inquiries/{inquiry_id}", status_code=204)
+async def delete_inquiry(
+    inquiry_id: str,
+    admin: dict = Depends(require_admin),
+):
+    """Delete an inquiry (admin only)."""
+    result = await db.contact_inquiries.delete_one({"id": inquiry_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+    return None
+
+
+# ============= Auth Endpoints =============
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+
+@api_router.post("/auth/login", response_model=LoginResponse)
+async def login(payload: LoginRequest):
+    """Admin login."""
+    user = await db.users.find_one({"email": payload.email.lower()})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not verify_password(payload.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    token = create_access_token(user_id=user["id"], email=user["email"], role=user.get("role", "admin"))
+    return LoginResponse(
+        access_token=token,
+        user={
+            "id": user["id"],
+            "email": user["email"],
+            "name": user.get("name", "Admin"),
+            "role": user.get("role", "admin"),
+        },
+    )
+
+
+@api_router.get("/auth/me")
+async def get_me(request: Request):
+    """Return the current authenticated admin."""
+    admin = await _get_current_admin(request, db)
+    return admin
 
 
 # ============= Seed Data =============
@@ -332,6 +415,39 @@ async def seed_database():
         logger.info(f"Seeded {len(testimonial_docs)} testimonials")
 
 
+async def seed_admin():
+    """Idempotently create / update the admin user from env vars."""
+    admin_email = os.environ.get("ADMIN_EMAIL", "").lower().strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    if not admin_email or not admin_password:
+        logger.warning("ADMIN_EMAIL/ADMIN_PASSWORD not set; skipping admin seeding")
+        return
+
+    # Ensure unique index on email
+    await db.users.create_index("email", unique=True)
+
+    existing = await db.users.find_one({"email": admin_email})
+    if existing is None:
+        user_doc = {
+            "id": str(uuid.uuid4()),
+            "email": admin_email,
+            "password_hash": hash_password(admin_password),
+            "name": "Admin",
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.users.insert_one(user_doc)
+        logger.info(f"Seeded admin user: {admin_email}")
+    else:
+        # Update password hash if it has changed in env
+        if not verify_password(admin_password, existing["password_hash"]):
+            await db.users.update_one(
+                {"email": admin_email},
+                {"$set": {"password_hash": hash_password(admin_password)}},
+            )
+            logger.info(f"Updated admin password for: {admin_email}")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -347,6 +463,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     await seed_database()
+    await seed_admin()
     logger.info("KK-TRUST COMP API started successfully")
 
 
