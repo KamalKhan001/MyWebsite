@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { companyInfo, categories } from '../mock';
+import { contactAPI } from '../services/api';
 import { toast } from 'sonner';
 
 export const Contact = () => {
@@ -25,6 +26,7 @@ export const Contact = () => {
     productInterest: '',
     message: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -40,21 +42,33 @@ export const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    toast.success('Thank you! Your message has been sent successfully. We will contact you soon.');
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      country: '',
-      productInterest: '',
-      message: ''
-    });
+    if (!formData.productInterest) {
+      toast.error('Please select a product interest');
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      await contactAPI.submit(formData);
+      toast.success('Thank you! Your message has been sent successfully. We will contact you soon.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        country: '',
+        productInterest: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to send message. Please try again or contact us directly.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -142,6 +156,7 @@ export const Contact = () => {
                       <Input
                         id="name"
                         name="name"
+                        data-testid="contact-name-input"
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="John Doe"
@@ -156,6 +171,7 @@ export const Contact = () => {
                         id="email"
                         name="email"
                         type="email"
+                        data-testid="contact-email-input"
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="john@example.com"
@@ -232,6 +248,7 @@ export const Contact = () => {
                     <Textarea
                       id="message"
                       name="message"
+                      data-testid="contact-message-input"
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="Tell us about your requirements, order quantity, timeline, etc."
@@ -244,10 +261,12 @@ export const Contact = () => {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={submitting}
+                    data-testid="contact-submit-btn"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"
                   >
                     <Send className="mr-2" size={18} />
-                    Send Message
+                    {submitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </CardContent>

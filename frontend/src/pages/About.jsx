@@ -25,7 +25,7 @@ export const About = () => {
               {companyInfo.description}
             </p>
             <p className="text-gray-600 leading-relaxed">
-              Based in Sialkot, the heart of Pakistan's textile industry, we have built a reputation for excellence in manufacturing and exporting premium quality apparel. Our state-of-the-art facilities, skilled workforce, and commitment to international standards have made us a preferred partner for businesses worldwide.
+              Based in Sialkot, the heart of Pakistan&apos;s textile industry, we have built a reputation for excellence in manufacturing and exporting premium quality apparel. Our state-of-the-art facilities, skilled workforce, and commitment to international standards have made us a preferred partner for businesses worldwide.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export const About = () => {
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">Strategic Location</h3>
                 <p className="text-gray-600 text-sm">
-                  Based in Sialkot, the hub of Pakistan's sports goods and textile industry
+                  Based in Sialkot, the hub of Pakistan&apos;s sports goods and textile industry
                 </p>
               </CardContent>
             </Card>

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { products, categories } from '../mock';
+import { categories } from '../mock';
+import { productsAPI } from '../services/api';
 import { Shirt, Activity, Dumbbell, Hand } from 'lucide-react';
 
 const iconMap = {
@@ -13,10 +14,25 @@ const iconMap = {
 
 export const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts = selectedCategory === 'All'
-    ? products
-    : products.filter(p => p.category === selectedCategory);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productsAPI.getAll(selectedCategory);
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [selectedCategory]);
+
+  const filteredProducts = products;
 
   return (
     <div className="min-h-screen">
@@ -83,7 +99,12 @@ export const Products = () => {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Loading products...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <Card key={product.id} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-all group">
                 <div className="relative overflow-hidden aspect-square">
@@ -103,7 +124,7 @@ export const Products = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Min Order:</span>
-                      <span className="font-medium text-blue-600">{product.minOrder}</span>
+                      <span className="font-medium text-blue-600">{product.min_order}</span>
                     </div>
                     
                     <div>
@@ -124,8 +145,9 @@ export const Products = () => {
               </Card>
             ))}
           </div>
+          )}
 
-          {filteredProducts.length === 0 && (
+          {filteredProducts.length === 0 && !loading && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">No products found in this category.</p>
             </div>

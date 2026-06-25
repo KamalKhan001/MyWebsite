@@ -1,12 +1,30 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Globe, Shield, Clock, Award, TrendingUp, Users } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { products, testimonials, companyInfo } from '../mock';
+import { companyInfo } from '../mock';
+import { productsAPI, testimonialsAPI } from '../services/api';
 
 export const Home = () => {
-  const featuredProducts = products.slice(0, 4);
-  const displayTestimonials = testimonials.slice(0, 3);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [displayTestimonials, setDisplayTestimonials] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [products, testimonials] = await Promise.all([
+          productsAPI.getAll(),
+          testimonialsAPI.getAll()
+        ]);
+        setFeaturedProducts(products.slice(0, 4));
+        setDisplayTestimonials(testimonials.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching home data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -175,7 +193,7 @@ export const Home = () => {
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-lg mb-2 text-gray-900">{product.name}</h3>
                   <p className="text-gray-600 text-sm mb-3">{product.description}</p>
-                  <div className="text-sm text-blue-600 font-medium">MOQ: {product.minOrder}</div>
+                  <div className="text-sm text-blue-600 font-medium">MOQ: {product.min_order}</div>
                 </CardContent>
               </Card>
             ))}
@@ -225,7 +243,7 @@ export const Home = () => {
                       <span key={i} className="text-yellow-400">★</span>
                     ))}
                   </div>
-                  <p className="text-gray-600 text-sm italic">"{testimonial.text}"</p>
+                  <p className="text-gray-600 text-sm italic">&ldquo;{testimonial.text}&rdquo;</p>
                 </CardContent>
               </Card>
             ))}
